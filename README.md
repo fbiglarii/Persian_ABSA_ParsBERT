@@ -1,259 +1,144 @@
 # Persian ABSA: Fine-tuning ParsBERT for Aspect-Based Sentiment Analysis
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/)
 
-## 🎯 Project Overview
-
-This project implements **Aspect-Based Sentiment Analysis (ABSA)** for Persian language by fine-tuning the **ParsBERT** model, achieving **90%+ accuracy** on Persian restaurant reviews.
-
-### Key Results
-- ✅ **Accuracy: 90%+** (ParsBERT fine-tuned)
-- 📊 **+50% improvement** over English baseline
-- 🚀 Training time: **~15 minutes** on Google Colab T4 GPU
+> **Course Project:** Fine-tuning ParsBERT for ABSA on Persian restaurant reviews. Achieved **90%+ accuracy** with only 240 training samples.
 
 ---
 
-## 📖 Background: Previous Experiments
+## 🎯 Overview
 
-> **Important:** Before diving into this project, please read [`EXPERIMENTS.docx`](EXPERIMENTS.docx) to understand our journey and baseline results.
+**Task:** Given Persian text and an aspect, classify sentiment as `positive`, `negative`, or `neutral`.
 
+**Example:**
+```
+Text: "غذای این رستوران عالی بود ولی سرویس کند بود"
+Aspect: "غذا" → Sentiment: positive ✅
+```
 
-### Our Project:
+---
 
-**Solution:** Fine-tune a Persian pre-trained model (ParsBERT) specifically for ABSA
+## 📖 Background
 
-**Result:** 
-- ParsBERT (fine-tuned): **90%+ accuracy** ✅
-- **2.25x better** than English baseline
-- **+50% improvement** overall
+> **See [`EXPERIMENTS.docx`](EXPERIMENTS.docx) for baseline experiments and motivation.**
+
+**Previous Work (NLP Course):**
+- InstructABSA (English model) on Persian: **40% accuracy** ❌
+- **Problem:** English models insufficient for Persian
+
+**Current Approach:**
+- Fine-tuned ParsBERT (Persian model): **90%+ accuracy** ✅
+- **Improvement:** +50% over baseline
 
 ---
 
 ## 📊 Dataset
 
 - **Source:** Persian restaurant reviews
-- **Total samples:** ~280
-  - Training: 240 samples (80%)
-  - Test: 60 samples (20%)
+- **Size:** ~280 samples
+  - Train: 240 (80%)
+  - Test: 60 (20%)
 - **Classes:** positive, negative, neutral
-- **Format:** CSV files (`persian_train.csv`, `persian_test.csv`)
-
-**Files included:**
-- `persian_train.csv` - Training data
-- `persian_test.csv` - Test data
+- **Format:** CSV (`persian_train.csv`, `persian_test.csv`)
 
 ---
 
-## 🚀 Quick Start
+## 🛠️ Method
 
-### Prerequisites
-- Google Account (for Colab)
-- GPU runtime (T4 recommended)
+**Input Format:** `[text] [SEP] [aspect]`
 
-### Step-by-Step Guide
+**Model:**
+- Base: ParsBERT (`HooshvareLab/bert-fa-base-uncased`)
+- Architecture: BERT-base (12 layers, 768 hidden, ~110M params)
+- Task: 3-class classification
 
-#### 1. Open Notebook in Google Colab
-1. Upload `Persian_ABSA_ParsBERT.ipynb` to Google Colab
-2. Enable GPU: `Runtime` → `Change runtime type` → Select `GPU (T4)`
-
-#### 2. Upload Data Files
-Upload both CSV files to Colab:
-- `persian_train.csv`
-- `persian_test.csv`
-
-#### 3. Run the Notebook
-Execute all cells: `Runtime` → `Run all`
-
-**⏱️ Total runtime:** ~15-20 minutes
-
----
-
-## 🧠 Understanding Fine-tuning
-
-### Common Question: Does fine-tuning change the model?
-
-**Answer:** No! The base model architecture remains the same, but it becomes **specialized** for ABSA.
-
-### Before Fine-tuning:
-```
-ParsBERT (Pre-trained)
-│
-├─ Capability: Understanding Persian language
-├─ Task: Language Modeling (MLM)
-├─ Training: Millions of Persian sentences
-└─ Output: Word embeddings (768-dim vectors)
-```
-❌ **Cannot** classify sentiments
-
-### After Fine-tuning:
-```
-ParsBERT (Fine-tuned for ABSA)
-│
-├─ Capability: Understanding Persian + Sentiment detection
-├─ Task: Aspect-Based Sentiment Classification
-├─ Training: +240 labeled ABSA samples
-└─ Output: [P(positive), P(negative), P(neutral)]
-```
-✅ **Can** classify sentiments accurately!
-
-### What Changed?
-
-| Aspect | Before | After |
-|--------|--------|-------|
-| **Architecture** | BERT-base (12 layers) | Same ✓ |
-| **Tokenizer** | ParsBERT tokenizer | Same ✓ |
-| **Weights** | General Persian | Specialized for ABSA ✓ |
-| **Output Layer** | Embeddings only | + Classification head (3 classes) ✓ |
-| **Capability** | Language understanding | Understanding + Sentiment detection ✓ |
-
-**Summary:** Same architecture, slightly updated weights, new capability!
+**Training:**
+- Epochs: 10
+- Batch size: 16
+- Learning rate: 2e-5
+- Optimizer: AdamW
+- Time: ~15 minutes (T4 GPU)
 
 ---
 
 ## 📈 Results
 
-### Model Comparison
+| Model | Accuracy | Macro-F1 | Notes |
+|-------|----------|----------|-------|
+| Random Baseline | 33% | ~0.33 | Random guessing |
+| InstructABSA (English) | 40% | ~0.38 | Baseline from previous project |
+| **ParsBERT (Fine-tuned)** | **90%+** | **~0.89** | Our approach ✅ |
 
-| Model | Accuracy | Description |
-|-------|----------|-------------|
-| Random Baseline | 33.33% | Random guessing |
-| InstructABSA (English) | ~40% | English instruction-tuned model |
-| **ParsBERT (Fine-tuned)** | **90%+** ✅ | Our approach |
-
-### Key Findings
-
-1. **Persian models are essential:** 
-   - English models: 40%
-   - Persian models: 90%+
-   - **Improvement: +50%**
-
-2. **Fine-tuning is effective:**
-   - With only 240 training samples
-   - Achieved 90%+ accuracy
-   - Training time: ~15 minutes
-
-3. **Transfer learning works:**
-   - Leveraged ParsBERT's Persian knowledge
-   - Adapted for ABSA task
-   - No need to train from scratch
+**Key Finding:** Persian pre-trained model essential for Persian ABSA (+50% improvement).
 
 ---
 
-## 🛠️ Technical Details
+## 🚀 Quick Start
 
-### Model Configuration
-- **Base Model:** ParsBERT (`HooshvareLab/bert-fa-base-uncased`)
-- **Architecture:** BERT-base
-  - 12 transformer layers
-  - 768 hidden dimensions
-  - 12 attention heads
-  - ~110M parameters
+### Google Colab (Recommended)
 
-### Training Hyperparameters
-- **Epochs:** 10
-- **Batch Size:** 16
-- **Learning Rate:** 2e-5
-- **Warmup Steps:** 50
-- **Weight Decay:** 0.01
-- **Optimizer:** AdamW
+1. Open `Persian_ABSA_ParsBERT.ipynb` in Colab
+2. Enable GPU: `Runtime` → `Change runtime type` → `T4 GPU`
+3. Upload `persian_train.csv` and `persian_test.csv`
+4. Run all cells: `Runtime` → `Run all`
 
-### Why These Settings?
+**Runtime:** ~15-20 minutes
 
-#### Why 10 Epochs?
-- Small dataset (240 samples) requires more iterations
-- Fine-tuning (not training from scratch) needs 5-15 epochs
-- Standard BERT fine-tuning practice
-- Achieved optimal results without overfitting
+### Local Setup
 
-#### Why Batch Size 16?
-- Balance between speed, memory, and quality
-- 240 samples ÷ 16 = 15 steps per epoch
-- Optimal for T4 GPU memory
-- Standard for BERT fine-tuning
-
-#### Train/Test Split: 80/20
-- Training: 240 samples (larger for better learning)
-- Test: 60 samples (evaluation)
-- No separate validation set due to small dataset size
-- Used early stopping to prevent overfitting
+```bash
+pip install transformers datasets accelerate scikit-learn pandas numpy
+jupyter notebook Persian_ABSA_ParsBERT.ipynb
+```
 
 ---
 
-## 💡 Key Insights
+## ⚠️ Limitations
 
-### 1. Why ParsBERT?
-- ✅ Pre-trained on Persian text
-- ✅ Better understanding of Persian grammar
-- ✅ Superior to English models (2.25x better)
-
-### 2. Why Fine-tuning?
-- ✅ Leverages existing knowledge
-- ✅ Requires less training data
-- ✅ Faster training
-- ✅ Better results than training from scratch
-
-### 3. Why This Approach Succeeded?
-- ✅ Strong base model (ParsBERT)
-- ✅ Quality dataset (Persian reviews)
-- ✅ Proper hyperparameter tuning
-- ✅ Transfer learning benefits
+1. **Small dataset** (~280 samples): Results may vary by split; k-fold CV recommended
+2. **Single split reporting:** One fixed split may not generalize
+3. **Domain-specific:** Trained only on restaurant reviews
+4. **Validation strategy:** Test set used for monitoring (potential leakage if hyperparameters tuned on test)
 
 ---
 
-## 📁 Project Structure
+
+## 📁 Files
 
 ```
-persian-absa-finetuning/
 ├── README.md                          # This file
-├── EXPERIMENTS.docx                   # experiments & baseline
-├── Persian_ABSA_ParsBERT.ipynb       # Main training notebook
+├── EXPERIMENTS.docx                   # Baseline experiments
+├── Persian_ABSA_ParsBERT.ipynb        # Training notebook
 ├── persian_train.csv                  # Training data
 └── persian_test.csv                   # Test data
 ```
 
 ---
 
-## 🔬 Methodology
+## 📚 References
 
-### 1. Data Preparation
-- Load CSV files with Persian reviews
-- Each row contains: text, aspect, sentiment
-- Combine text and aspect with `[SEP]` token
-- Convert sentiment labels to numeric (0, 1, 2)
+**Papers:**
+1. Devlin et al., 2019 - "BERT: Pre-training of Deep Bidirectional Transformers"
+2. Farahani et al., 2020 - "ParsBERT: Transformer-based Model for Persian Language"
+3. Scaria et al., 2024 - "Instruction Learning for ABSA"
 
-### 2. Model Loading
-- Load pre-trained ParsBERT from HuggingFace
-- Add classification head (3 output classes)
-- Initialize with pre-trained weights
-
-### 3. Training
-- Fine-tune for 10 epochs
-- Monitor validation accuracy each epoch
-- Save best model based on accuracy
-- Use early stopping if needed
-
-### 4. Evaluation
-- Test on held-out test set (60 samples)
-- Calculate accuracy, precision, recall, F1
-- Generate confusion matrix
-- Analyze per-class performance
+**Resources:**
+- [ParsBERT Model](https://huggingface.co/HooshvareLab/bert-fa-base-uncased)
+- [HuggingFace Transformers](https://huggingface.co/docs/transformers)
 
 ---
 
-## 📚 References
+## 🙏 Acknowledgments
 
-### Papers
-1. **BERT:** Devlin et al., 2019 - "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding"
-2. **ParsBERT:** Farahani et al., 2020 - "ParsBERT: Transformer-based Model for Persian Language Understanding"
-3. **InstructABSA:** Scaria et al., 2024 - "Instruction Learning for Aspect-Based Sentiment Analysis"
+- **HooshvareLab** for ParsBERT
+- **Google Colab** for free GPU
+- **Course Instructors** for guidance
 
-### Resources
-- [ParsBERT GitHub](https://github.com/hooshvare/parsbert)
-- [HuggingFace Transformers](https://huggingface.co/docs/transformers)
-- [ParsBERT Model Card](https://huggingface.co/HooshvareLab/bert-fa-base-uncased)
+---
 
+<div align="center">
 
+**⭐ Star this project if helpful!**
 
-
+</div>
