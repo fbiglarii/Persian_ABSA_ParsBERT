@@ -23,7 +23,7 @@ Aspect: "غذا" → Sentiment: positive ✅
 
 > **See [`EXPERIMENTS.docx`](EXPERIMENTS.docx) for baseline experiments and motivation.**
 
-**Previous Work (NLP Course):**
+**Previous Experiments:**
 - InstructABSA (English model) on Persian: **40% accuracy** ❌
 - **Problem:** English models insufficient for Persian
 
@@ -64,11 +64,11 @@ Aspect: "غذا" → Sentiment: positive ✅
 
 ## 📈 Results
 
-| Model | Accuracy | Macro-F1 | Notes |
-|-------|----------|----------|-------|
-| Random Baseline | 33% | ~0.33 | Random guessing |
-| InstructABSA (English) | 40% | ~0.38 | Baseline from previous project |
-| **ParsBERT (Fine-tuned)** | **90%+** | **~0.89** | Our approach ✅ |
+| Model | Accuracy | Description |
+|-------|----------|-------------|
+| Random Baseline | 33.33% | Random guessing |
+| InstructABSA (English) | ~40% | English instruction-tuned model |
+| **ParsBERT (Fine-tuned)** | **90%+** ✅ | Our approach |
 
 **Key Finding:** Persian pre-trained model essential for Persian ABSA (+50% improvement).
 
@@ -135,10 +135,4 @@ jupyter notebook Persian_ABSA_ParsBERT.ipynb
 - **Google Colab** for free GPU
 - **Course Instructors** for guidance
 
----
 
-<div align="center">
-
-**⭐ Star this project if helpful!**
-
-</div>
