@@ -1,8 +1,5 @@
 # Persian ABSA: Fine-tuning ParsBERT for Aspect-Based Sentiment Analysis
 
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/)
-
 > **Course Project:** Fine-tuning ParsBERT for ABSA on Persian restaurant reviews. Achieved **90%+ accuracy** with only 240 training samples.
 
 ---
